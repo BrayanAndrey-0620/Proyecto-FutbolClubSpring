@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${jugador.id != null} ? 'Editar Jugador' : 'Nuevo Jugador'">Formulario Jugador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #1a1d29;
+            --card-bg: #2d3040;
+            --accent: #6366f1;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        
+        body {
+            background: var(--dark-bg);
+            color: var(--text-light);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        .form-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid #374151;
+        }
+        
+        .form-control, .form-select {
+            background: #1f2937;
+            border: 1px solid #374151;
+            color: var(--text-light);
+            border-radius: 8px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background: #1f2937;
+            border-color: var(--accent);
+            color: var(--text-light);
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 30px;
+        }
+        
+        .section-title {
+            color: var(--accent);
+            font-weight: 600;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .player-preview {
+            background: #1f2937;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .preview-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white;
+            margin: 0 auto 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--card-bg);">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-futbol me-2"></i>Futbol Manager
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/}">Inicio</a>
+                <a class="nav-link" th:href="@{/clubes}">Clubes</a>
+                <a class="nav-link" th:href="@{/entrenadores}">Entrenadores</a>
+                <a class="nav-link active" th:href="@{/jugadores}">Jugadores</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10">
+                <div class="form-container p-4 p-md-5">
+                    <!-- Header -->
+                    <div class="text-center mb-5">
+                        <h1 class="h3 fw-bold" th:text="${jugador.id != null} ? 'Editar Jugador' : 'Crear Nuevo Jugador'"></h1>
+                        <p class="text-muted">Complete la información del jugador de fútbol</p>
+                    </div>
+
+                    <form th:action="@{/jugadores/guardar}" th:object="${jugador}" method="post">
+                        <input type="hidden" th:field="*{id}">
+                        
+                        <div class="row">
+                            <!-- Formulario -->
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Nombre</label>
+                                            <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ingrese el nombre" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Apellido</label>
+                                            <input type="text" th:field="*{apellido}" class="form-control" placeholder="Ingrese el apellido" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Número de Dorsal</label>
+                                            <input type="number" th:field="*{numero}" class="form-control" placeholder="Ej: 10" min="1" max="99" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Posición</label>
+                                            <select th:field="*{posicion}" class="form-select" required>
+                                                <option value="">Seleccionar posición</option>
+                                                <option value="Portero">Portero</option>
+                                                <option value="Defensa">Defensa</option>
+                                                <option value="Mediocampista">Mediocampista</option>
+                                                <option value="Delantero">Delantero</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Edad</label>
+                                            <input type="number" class="form-control" placeholder="Ingrese la edad" min="16" max="45">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Nacionalidad</label>
+                                            <input type="text" class="form-control" placeholder="Ingrese la nacionalidad">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Pierna Hábil</label>
+                                            <select class="form-select">
+                                                <option value="">Seleccionar</option>
+                                                <option value="Derecha">Derecha</option>
+                                                <option value="Izquierda">Izquierda</option>
+                                                <option value="Ambidiestro">Ambidiestro</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Vista Previa -->
+                            <div class="col-md-4">
+                                <div class="player-preview">
+                                    <div class="preview-number" th:text="${jugador.numero ?: '?'}"></div>
+                                    <h5 th:text="${(jugador.nombre ?: 'Nombre') + ' ' + (jugador.apellido ?: 'Apellido')}"></h5>
+                                    <p class="text-muted mb-2" th:text="${jugador.posicion ?: 'Posición'}"></p>
+                                    <div class="mt-3">
+                                        <small class="text-muted">Vista previa del jugador</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-flex gap-3 justify-content-end pt-4 border-top" style="border-color: #374151 !important;">
+                            <a th:href="@{/jugadores}" class="btn btn-outline-light px-4">Cancelar</a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-save me-2"></i>
+                                <span th:text="${jugador.id != null} ? 'Actualizar Jugador' : 'Crear Jugador'"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Actualizar vista previa en tiempo real
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('input', updatePreview);
+            });
+        });
+        
+        function updatePreview() {
+            const nombre = document.querySelector('[th\\:field*="nombre"]').value || 'Nombre';
+            const apellido = document.querySelector('[th\\:field*="apellido"]').value || 'Apellido';
+            const numero = document.querySelector('[th\\:field*="numero"]').value || '?';
+            const posicion = document.querySelector('[th\\:field*="posicion"]').value || 'Posición';
+            
+            document.querySelector('.preview-number').textContent = numero;
+            document.querySelector('.player-preview h5').textContent = nombre + ' ' + apellido;
+            document.querySelector('.player-preview p').textContent = posicion;
+        }
+    </script>
+</body>
+</html>

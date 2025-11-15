@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Entrenadores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #1a1d29;
+            --card-bg: #2d3040;
+            --accent: #6366f1;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        
+        body {
+            background: var(--dark-bg);
+            color: var(--text-light);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #374151;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .coach-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--card-bg);">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-futbol me-2"></i>Futbol Manager
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/}">Inicio</a>
+                <a class="nav-link" th:href="@{/clubes}">Clubes</a>
+                <a class="nav-link active" th:href="@{/entrenadores}">Entrenadores</a>
+                <a class="nav-link" th:href="@{/jugadores}">Jugadores</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <!-- Header -->
+        <div class="row align-items-center mb-4">
+            <div class="col">
+                <h1 class="h3 fw-bold">Gestión de Entrenadores</h1>
+                <p class="text-light mb-0">Administra el cuerpo técnico de los clubes</p>
+            </div>
+            <div class="col-auto">
+                <a th:href="@{/entrenadores/nuevo}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Nuevo Entrenador
+                </a>
+            </div>
+        </div>
+
+        <!-- Entrenadores Grid -->
+        <div class="row g-4">
+            <div th:each="entrenador : ${entrenadores}" class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <div class="coach-avatar mx-auto">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <h5 class="card-title fw-bold" th:text="${entrenador.nombre + ' ' + entrenador.apellido}"></h5>
+                            <p class="text-light mb-2" th:text="${entrenador.nacionalidad}"></p>
+                            <span class="badge bg-primary rounded-pill" th:text="${entrenador.edad} + ' años'"></span>
+                        </div>
+                        
+                        <div class="coach-info mb-4">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <small class="text-light">Experiencia</small>
+                                    <div class="fw-semibold">Profesional</div>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-light">Licencia</small>
+                                    <div class="fw-semibold">UEFA Pro</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="btn-group w-100">
+                            <a th:href="@{/entrenadores/editar/{id}(id=${entrenador.id})}" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-edit me-1"></i>Editar
+                            </a>
+                            <a th:href="@{/entrenadores/eliminar/{id}(id=${entrenador.id})}" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Está seguro de eliminar este entrenador?')">
+                                <i class="fas fa-trash me-1"></i>Eliminar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${entrenadores.empty}" class="text-center py-5">
+            <div class="card">
+                <div class="card-body py-5">
+                    <i class="fas fa-user-tie text-light mb-3" style="font-size: 3rem;"></i>
+                    <h5 class="text-light">No hay entrenadores registrados</h5>
+                    <p class="text-light mb-4">Comienza agregando el primer entrenador al sistema</p>
+                    <a th:href="@{/entrenadores/nuevo}" class="btn btn-primary">Crear Primer Entrenador</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

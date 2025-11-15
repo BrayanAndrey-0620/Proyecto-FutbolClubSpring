@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Jugadores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #1a1d29;
+            --card-bg: #2d3040;
+            --accent: #6366f1;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        
+        body {
+            background: var(--dark-bg);
+            color: var(--text-light);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #374151;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .player-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .position-badge {
+            background: #374151;
+            color: var(--text-light);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .position-border {
+            border-left: 4px solid #6366f1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--card-bg);">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-futbol me-2"></i>Futbol Manager
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/}">Inicio</a>
+                <a class="nav-link" th:href="@{/clubes}">Clubes</a>
+                <a class="nav-link" th:href="@{/entrenadores}">Entrenadores</a>
+                <a class="nav-link active" th:href="@{/jugadores}">Jugadores</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <!-- Header -->
+        <div class="row align-items-center mb-4">
+            <div class="col">
+                <h1 class="h3 fw-bold">Gestión de Jugadores</h1>
+                <p class="text-light mb-0">Administra la plantilla de jugadores del sistema</p>
+            </div>
+            <div class="col-auto">
+                <a th:href="@{/jugadores/nuevo}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Nuevo Jugador
+                </a>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold text-light">Filtrar por posición</label>
+                        <select class="form-select" onchange="filterPlayers(this.value)">
+                            <option value="">Todas las posiciones</option>
+                            <option value="Portero">Portero</option>
+                            <option value="Defensa">Defensa</option>
+                            <option value="Mediocampista">Mediocampista</option>
+                            <option value="Delantero">Delantero</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label fw-semibold text-light">Buscar jugador</label>
+                        <input type="text" class="form-control" placeholder="Buscar por nombre o apellido..." onkeyup="searchPlayers(this.value)">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold text-light">&nbsp;</label>
+                        <div>
+                            <span class="badge bg-primary" th:text="${jugadores.size()} + ' jugadores'"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jugadores Grid -->
+        <div class="row g-4" id="playersGrid">
+            <div th:each="jugador : ${jugadores}" class="col-12 col-md-6 col-lg-4 player-card">
+                <div class="card h-100 position-border">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="player-number" th:text="${jugador.numero}"></div>
+                            <span class="position-badge" th:text="${jugador.posicion}"></span>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <h5 class="card-title fw-bold mb-1" th:text="${jugador.nombre + ' ' + jugador.apellido}"></h5>
+                            <p class="text-light mb-3" th:text="'Dorsal ' + ${jugador.numero}"></p>
+                        </div>
+                        
+                        <div class="player-stats mb-4">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <small class="text-light">Edad</small>
+                                    <div class="fw-semibold">25</div>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-light">Altura</small>
+                                    <div class="fw-semibold">1.80m</div>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-light">Valor</small>
+                                    <div class="fw-semibold">€5M</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="btn-group w-100">
+                            <a th:href="@{/jugadores/editar/{id}(id=${jugador.id})}" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-edit me-1"></i>Editar
+                            </a>
+                            <a th:href="@{/jugadores/eliminar/{id}(id=${jugador.id})}" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Está seguro de eliminar este jugador?')">
+                                <i class="fas fa-trash me-1"></i>Eliminar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${jugadores.empty}" class="text-center py-5">
+            <div class="card">
+                <div class="card-body py-5">
+                    <i class="fas fa-users text-light mb-3" style="font-size: 3rem;"></i>
+                    <h5 class="text-light">No hay jugadores registrados</h5>
+                    <p class="text-light mb-4">Comienza agregando el primer jugador al sistema</p>
+                    <a th:href="@{/jugadores/nuevo}" class="btn btn-primary">Crear Primer Jugador</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterPlayers(position) {
+            const cards = document.querySelectorAll('.player-card');
+            cards.forEach(card => {
+                const playerPosition = card.querySelector('.position-badge').textContent;
+                if (!position || playerPosition === position) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        function searchPlayers(query) {
+            const cards = document.querySelectorAll('.player-card');
+            const searchTerm = query.toLowerCase();
+            
+            cards.forEach(card => {
+                const playerName = card.querySelector('.card-title').textContent.toLowerCase();
+                if (playerName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

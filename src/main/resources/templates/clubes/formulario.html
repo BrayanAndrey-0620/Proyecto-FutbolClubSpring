@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${club.id != null} ? 'Editar Club' : 'Nuevo Club'">Formulario Club</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #1a1d29;
+            --card-bg: #2d3040;
+            --accent: #6366f1;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        
+        body {
+            background: var(--dark-bg);
+            color: var(--text-light);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        .form-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid #374151;
+        }
+        
+        .form-control, .form-select {
+            background: #1f2937;
+            border: 1px solid #374151;
+            color: var(--text-light);
+            border-radius: 8px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background: #1f2937;
+            border-color: var(--accent);
+            color: var(--text-light);
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 30px;
+        }
+        
+        .section-title {
+            color: var(--accent);
+            font-weight: 600;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--card-bg);">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-futbol me-2"></i>Futbol Manager
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/}">Inicio</a>
+                <a class="nav-link active" th:href="@{/clubes}">Clubes</a>
+                <a class="nav-link" th:href="@{/entrenadores}">Entrenadores</a>
+                <a class="nav-link" th:href="@{/jugadores}">Jugadores</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10">
+                <div class="form-container p-4 p-md-5">
+                    <!-- Header -->
+                    <div class="text-center mb-5">
+                        <h1 class="h3 fw-bold" th:text="${club.id != null} ? 'Editar Club' : 'Crear Nuevo Club'"></h1>
+                        <p class="text-light">Complete la información del club de fútbol</p>
+                    </div>
+
+                    <form th:action="@{/clubes/guardar}" th:object="${club}" method="post">
+                        <input type="hidden" th:field="*{id}">
+                        
+                        <!-- Información Básica -->
+                        <div class="mb-5">
+                            <h4 class="section-title">Información Básica</h4>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Nombre del Club</label>
+                                        <input type="text" th:field="*{nombre}" class="form-control form-control-lg" placeholder="Ingrese el nombre del club" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Relaciones -->
+                        <div class="mb-5">
+                            <h4 class="section-title">Relaciones</h4>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Entrenador</label>
+                                        <select th:field="*{entrenador}" class="form-select">
+                                            <option value="">Seleccionar entrenador</option>
+                                            <option th:each="entrenador : ${entrenadores}" 
+                                                    th:value="${entrenador.id}"
+                                                    th:text="${entrenador.nombre + ' ' + entrenador.apellido}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Asociación</label>
+                                        <select th:field="*{asociacion}" class="form-select">
+                                            <option value="">Seleccionar asociación</option>
+                                            <option th:each="asociacion : ${asociaciones}" 
+                                                    th:value="${asociacion.id}"
+                                                    th:text="${asociacion.nombre}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Jugadores del Plantel</label>
+                                        <select th:field="*{jugadores}" class="form-select" multiple size="5">
+                                            <option th:each="jugador : ${jugadores}" 
+                                                    th:value="${jugador.id}"
+                                                    th:text="${jugador.nombre + ' ' + jugador.apellido + ' - ' + jugador.posicion}">
+                                            </option>
+                                        </select>
+                                        <div class="form-text text-light">Mantenga presionada la tecla Ctrl para seleccionar múltiples jugadores</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Competiciones</label>
+                                        <select th:field="*{competiciones}" class="form-select" multiple size="4">
+                                            <option th:each="competicion : ${competiciones}" 
+                                                    th:value="${competicion.id}"
+                                                    th:text="${competicion.nombre + ' - ' + competicion.montoPremio + ' USD'}">
+                                            </option>
+                                        </select>
+                                        <div class="form-text text-light">Seleccione las competiciones en las que participa el club</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-flex gap-3 justify-content-end pt-4 border-top" style="border-color: #374151 !important;">
+                            <a th:href="@{/clubes}" class="btn btn-outline-light px-4">Cancelar</a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-save me-2"></i>
+                                <span th:text="${club.id != null} ? 'Actualizar Club' : 'Crear Club'"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

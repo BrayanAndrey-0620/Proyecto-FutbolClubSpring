@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clubes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #1a1d29;
+            --card-bg: #2d3040;
+            --accent: #6366f1;
+            --text-light: #f8fafc;
+            --text-muted: rgb(192, 192, 192);
+        }
+        
+        body {
+            background: var(--dark-bg);
+            color: var(--text-light);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #374151;
+            border-radius: 12px;
+        }
+        
+        .table {
+            --bs-table-bg: var(--card-bg);
+            --bs-table-color: var(--text-light);
+            --bs-table-border-color: #374151;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border: none;
+            border-radius: 8px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--card-bg);">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-futbol me-2"></i>Futbol Manager
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/}">Inicio</a>
+                <a class="nav-link active" th:href="@{/clubes}">Clubes</a>
+                <a class="nav-link" th:href="@{/entrenadores}">Entrenadores</a>
+                <a class="nav-link" th:href="@{/jugadores}">Jugadores</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <!-- Header -->
+        <div class="row align-items-center mb-4">
+            <div class="col">
+                <h1 class="h3 fw-bold">Gestión de Clubes</h1>
+                <p class="text-light mb-0">Administra los clubes de fútbol registrados en el sistema</p>
+            </div>
+            <div class="col-auto">
+                <a th:href="@{/clubes/nuevo}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Nuevo Club
+                </a>
+            </div>
+        </div>
+
+        <!-- Clubes Grid -->
+        <div class="row g-4">
+            <div th:each="club : ${clubes}" class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title fw-bold" th:text="${club.nombre}"></h5>
+                            <span class="badge bg-primary rounded-pill" th:text="${club.jugadores?.size() ?: '0'} + ' jugadores'"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div th:if="${club.entrenador}" class="d-flex align-items-center mb-2">
+                                <i class="fas fa-user-tie text-light me-2" style="width: 16px;"></i>
+                                <small class="text-light" th:text="${club.entrenador.nombre + ' ' + club.entrenador.apellido}"></small>
+                            </div>
+                            <div th:if="${club.asociacion}" class="d-flex align-items-center mb-2">
+                                <i class="fas fa-flag text-light me-2" style="width: 16px;"></i>
+                                <small class="text-light" th:text="${club.asociacion.nombre}"></small>
+                            </div>
+                            <div th:if="${club.competiciones}" class="d-flex align-items-center">
+                                <i class="fas fa-trophy text-light me-2" style="width: 16px;"></i>
+                                <small class="text-light" th:text="${club.competiciones.size()} + ' competiciones'"></small>
+                            </div>
+                        </div>
+                        
+                        <div class="btn-group w-100">
+                            <a th:href="@{/clubes/editar/{id}(id=${club.id})}" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-edit me-1"></i>Editar
+                            </a>
+                            <a th:href="@{/clubes/eliminar/{id}(id=${club.id})}" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Está seguro de eliminar este club?')">
+                                <i class="fas fa-trash me-1"></i>Eliminar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${clubes.empty}" class="text-center py-5">
+            <div class="card">
+                <div class="card-body py-5">
+                    <i class="fas fa-trophy text-light mb-3" style="font-size: 3rem;"></i>
+                    <h5 class="text-light">No hay clubes registrados</h5>
+                    <p class="text-light mb-4">Comienza agregando el primer club al sistema</p>
+                    <a th:href="@{/clubes/nuevo}" class="btn btn-primary">Crear Primer Club</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
